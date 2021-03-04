@@ -1,5 +1,5 @@
 # Gradient descent-based vocoder
-##### Recovers phase of Mel spectrograms using gradient descent
+##### Recovers audio of Mel spectrograms using gradient descent
 
 The basic idea of this project is to try to recover audio data from a spectrogram. There already exists the [Griffin-Lim algorithm family](https://ltfat.github.io/notes/ltfatnote021.pdf) to do this, and it can even perfectly reconstruct audio from the spectrogram in some cases.  However, the challenge in my case is I binned the audio into the [Mel scale](https://en.wikipedia.org/wiki/Mel_scale), compressing the magnitude data by a factor of 2 and making the original unrecoverable.  Griffin-Lim can only be used by creating a blurry version of the original spectrogram from the compressed Mel bins.
 
