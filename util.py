@@ -1,8 +1,6 @@
 import tensorflow as tf
 import numpy as np
 from numpy import pi
-import pylab as plt
-from colorsys import hls_to_rgb
 
 def colorize(z):
     r = np.abs(z)
@@ -18,6 +16,9 @@ def colorize(z):
     return c
 
 def cplot(w, show=False):
+    import pylab as plt
+    from colorsys import hls_to_rgb
+
     plt.figure()
     img = colorize(np.squeeze(w))
     plt.imshow(img)

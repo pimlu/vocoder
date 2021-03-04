@@ -45,12 +45,12 @@ def prep_mel(path):
         #return sess.run([melmags, ofreqs])
         return sess.run(melmags), refreqs
 
-def run_vocoder(melmags, refreqs):
+def run_vocoder(melmags, refreqs, outpath):
     with tf.compat.v1.Session() as sess:
         res = voc.mel_loss(melmags, mel, refreqs)
 
-        #optimizer = tf.train.AdagradOptimizer(0.01)
-        #optimizer = tf.train.GradientDescentOptimizer(0.5)
+        #optimizer = tf.compat.v1.train.AdagradOptimizer(0.01)
+        #optimizer = tf.compat.v1.train.GradientDescentOptimizer(0.1)
         optimizer = tf.compat.v1.train.AdamOptimizer()
 
         train = optimizer.minimize(res.loss)
@@ -70,17 +70,29 @@ def run_vocoder(melmags, refreqs):
                 .format(i, loss, err_sum, err_stft, err_mag, resonance))
 
         restored = sig.decode(res.vfreq)
-        sess.run(util.write_sound(restored, 'samples/minimized.wav'))
+        print('writing to {}...'.format(outpath))
+        sess.run(util.write_sound(restored, outpath))
 
+def main():
+    if len(sys.argv) not in [2,3]:
+        print('need 2 or 3 arguments')
+        print('usage: main.py infile.wav [outfile.wav]')
+        return
+    inpath = sys.argv[1]
+    outpath = os.path.join(os.path.dirname(inpath), 'out.wav')
+    if len(sys.argv) == 3:
+        outpath = sys.argv[2]
 
-# uh... https://stackoverflow.com/a/60699372
-physical_devices = tf.config.list_physical_devices('GPU') 
-if len(physical_devices) > 0:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    # uh... https://stackoverflow.com/a/60699372
+    physical_devices = tf.config.list_physical_devices('GPU')
+    if len(physical_devices) > 0:
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-print('loading file...')
-melmags, refreqs = prep_mel('samples/arctic_raw_16k.wav')
-#refreqs += 0.002*np.random.random(refreqs.shape) - 0.001
-tf.compat.v1.reset_default_graph()
-print('running vocoder...')
-run_vocoder(melmags, refreqs)
+    print('loading {}...'.format(inpath))
+    melmags, refreqs = prep_mel(inpath)
+    #refreqs += 0.002*np.random.random(refreqs.shape) - 0.001
+    tf.compat.v1.reset_default_graph()
+    print('running vocoder...')
+    run_vocoder(melmags, refreqs, outpath)
+
+main()
