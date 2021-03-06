@@ -40,7 +40,7 @@ def prep_mel(path):
         refreqs = sig.griffin_lim(freqs, iters=GL_ITERS, alpha=0.99)
 
         restored = sig.decode(refreqs)
-        sess.run(util.write_sound(restored, 'samples/output.wav'))
+        #sess.run(util.write_sound(restored, 'samples/output.wav'))
 
         #return sess.run([melmags, ofreqs])
         return sess.run(melmags), refreqs

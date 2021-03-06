@@ -10,17 +10,9 @@ class VocoderResult:
     err_mag = None
     loss_resonance = None
 
-def primegroups(n):
-    p = [True]*n
-    p[:2] = [False, False]
-    groups = []
-    for i in range(n//2):
-        if not p[i]: continue
-        groups.append([i])
-        for j in range(2*i, n, i):
-            p[j] = False
-            groups[-1].append(j)
-    return groups
+def groups(n):
+    for i in range(1, n//2):
+        yield range(i,n,i)
 
 # the idea of this was, to add a loss based on the euclidean norm
 # of vectors of magnitudes on harmonic frequencies (e.g 100, 200, 300...)
@@ -31,7 +23,7 @@ def primegroups(n):
 def resonant_loss(vmag):
     n = vmag.get_shape()[-1]
     losses = []
-    for g in primegroups(n):
+    for g in groups(n):
         grouped = tf.gather(vmag, g, axis=-1)
         norms = tf.norm(tensor=grouped, axis=-1, ord=2)
         losses.append(tf.reduce_mean(input_tensor=norms, axis=-1))
